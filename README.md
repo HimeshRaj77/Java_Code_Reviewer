@@ -118,10 +118,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 - Use environment-specific configurations
 - Follow security guidelines
 
-## 📄 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
-
 ## ❓ Support
 
 - Report issues through GitHub Issues

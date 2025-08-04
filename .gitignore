@@ -1,0 +1,61 @@
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.project
+.classpath
+.settings/
+.factorypath
+.springBeans
+.sts4-cache
+/nbproject/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Private Configuration
+**/application-private.properties
+**/config/application-private.properties
+*.private.properties
+*.env
+!*.template
+!*.example
+
+# Logs
+*.log
+logs/
+.logs/
+
+# Temp Files
+*.tmp
+*.temp
+*.swp
+*.bak
+*.backup
+log/
+tmp/
+temp/
+cache/
+
+### Generated Files ###
+*.generated.*
+generated/
+dist/
+repomix-output.xml
+
+### Local Development ###
+.local/
+local.properties
+*.local
+*.dev

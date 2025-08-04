@@ -1,0 +1,323 @@
+/* Modern Enhanced Theme for Code Reviewer */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #f8fafc 0%, #e2e8f0 100%);
+    -fx-font-family: 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+    -fx-text-fill: #1e293b;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Enhanced Menu System */
+.menu-bar {
+    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f1f5f9 100%);
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 0 0 1px 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0.2, 0, 2);
+    -fx-padding: 4 0;
+}
+
+.menu {
+    -fx-background-color: transparent;
+    -fx-text-fill: #334155;
+    -fx-padding: 10 18;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+}
+
+.menu:hover, .menu:showing {
+    -fx-background-color: #e0e7ff;
+    -fx-text-fill: #4338ca;
+    -fx-background-radius: 6px;
+}
+
+.context-menu {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 12, 0.3, 0, 4);
+    -fx-padding: 6px 0;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #374151;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+    -fx-background-radius: 6px;
+}
+
+.menu-item:focused, .menu-item:hover {
+    -fx-background-color: #f0f9ff;
+    -fx-text-fill: #0ea5e9;
+    -fx-font-weight: 500;
+}
+
+/* Enhanced Code Area - Better Expansion */
+.code-area {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #374151;
+    -fx-highlight-fill: #dbeafe;
+    -fx-highlight-text-fill: #1e40af;
+    -fx-font-size: 14px;
+    -fx-font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 16, 0.2, 0, 4);
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-pref-width: 1000px;  /* Ensure code area expands properly */
+    -fx-max-width: 5000px;   /* Allow extensive horizontal expansion */
+}
+
+.code-area:focused {
+    -fx-border-color: #3b82f6;
+    -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.3), 20, 0.3, 0, 6);
+}
+
+/* Enhanced Code and Heatmap Container - Fix Expansion Issues */
+.code-heatmap-container {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+    -fx-background-radius: 12px;
+    -fx-pref-width: 5000px; /* Allow the container to expand fully */
+    -fx-min-width: 800px;   /* Ensure minimum reasonable width */
+    -fx-hgrow: ALWAYS;      /* Horizontal growth priority */
+}
+
+/* Improved Split Panes */
+.code-split-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.code-split-pane .split-pane-divider {
+    -fx-background-color: #cbd5e1;
+    -fx-padding: 0 0 2 0;
+}
+
+.main-split-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.main-split-pane .split-pane-divider {
+    -fx-background-color: #e2e8f0;
+    -fx-padding: 0 2 0 0;
+}
+
+/* Enhanced List Views */
+.list-view {
+    -fx-background-color: #ffffff;
+    -fx-control-inner-background: #ffffff;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px 0;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 12, 0.2, 0, 3);
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #374151;
+    -fx-padding: 12px 16px;
+    -fx-border-radius: 6px;
+    -fx-font-size: 13px;
+    -fx-background-radius: 6px;
+}
+
+.list-cell:hover {
+    -fx-background-color: #f8fafc;
+    -fx-text-fill: #1e40af;
+}
+
+.list-cell:selected, .list-cell:focused {
+    -fx-background-color: linear-gradient(to right, #dbeafe 0%, #f0f9ff 100%);
+    -fx-text-fill: #1e40af;
+    -fx-font-weight: 600;
+    -fx-border-color: #3b82f6;
+    -fx-border-width: 0 0 0 3px;
+}
+
+/* Enhanced Section Headers */
+.section-header {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e293b;
+    -fx-padding: 12px 0 8px 0;
+    -fx-background-color: transparent;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.error-header {
+    -fx-text-fill: #dc2626;
+}
+
+.suggestion-header {
+    -fx-text-fill: #059669;
+}
+
+.details-header {
+    -fx-text-fill: #7c3aed;
+}
+
+/* Issue Highlighting */
+.critical-error-highlight {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #dc2626;
+    -fx-font-weight: 600;
+    -fx-border-color: #fca5a5;
+    -fx-border-width: 0 0 0 3px;
+}
+
+.warning-highlight {
+    -fx-background-color: #fffbeb;
+    -fx-text-fill: #d97706;
+    -fx-border-color: #fbbf24;
+    -fx-border-width: 0 0 0 3px;
+}
+
+.info-highlight {
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #2563eb;
+    -fx-border-color: #60a5fa;
+    -fx-border-width: 0 0 0 3px;
+}
+
+.suggestion-highlight {
+    -fx-background-color: #f0fdf4;
+    -fx-text-fill: #059669;
+    -fx-border-color: #34d399;
+    -fx-border-width: 0 0 0 3px;
+}
+
+.selected-issue-highlight {
+    -fx-background-color: #e0e7ff;
+    -fx-text-fill: #4338ca;
+    -fx-font-weight: 700;
+    -fx-effect: dropshadow(gaussian, rgba(67,56,202,0.4), 8, 0.5, 0, 0);
+}
+
+/* Long method and other specific highlights */
+.long-method-highlight {
+    -fx-background-color: #fef3c7;
+    -fx-text-fill: #d97706;
+    -fx-border-color: #fbbf24;
+    -fx-border-width: 0 0 0 3px;
+}
+
+.deep-nesting-highlight {
+    -fx-background-color: #fee2e2;
+    -fx-text-fill: #dc2626;
+    -fx-border-color: #fca5a5;
+    -fx-border-width: 0 0 0 3px;
+}
+
+.empty-block-highlight {
+    -fx-background-color: #f3f4f6;
+    -fx-text-fill: #6b7280;
+    -fx-border-color: #d1d5db;
+    -fx-border-width: 0 0 0 3px;
+}
+
+.unused-import-highlight {
+    -fx-background-color: #f0fdf4;
+    -fx-text-fill: #059669;
+    -fx-border-color: #34d399;
+    -fx-border-width: 0 0 0 3px;
+}
+
+/* Enhanced Details Area */
+.details-area {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #374151;
+    -fx-font-size: 13px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-padding: 16px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 12, 0.2, 0, 3);
+    -fx-control-inner-background: #ffffff;
+}
+
+/* AI Suggestion Area has been removed */
+
+/* Enhanced Buttons */
+.button {
+    -fx-background-color: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+    -fx-text-fill: #374151;
+    -fx-border-color: #d1d5db;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 16px;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 4, 0.2, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #f9fafb 0%, #f3f4f6 100%);
+    -fx-text-fill: #1f2937;
+    -fx-border-color: #9ca3af;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 6, 0.3, 0, 2);
+}
+
+/* AI buttons have been removed */
+
+/* Enhanced Containers */
+.right-pane {
+    -fx-background-color: linear-gradient(to bottom, #fefefe 0%, #f8fafc 100%);
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 16, 0.2, 0, 4);
+}
+
+/* Bottom bar has been removed */
+
+/* Heatmap Styling */
+.heatmap-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 5px 0;
+    -fx-spacing: 1;
+}
+
+/* Scrollbar Styling */
+.scroll-bar:horizontal, .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #cbd5e1;
+    -fx-background-radius: 6px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #94a3b8;
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #64748b;
+}
+
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+}
+
+/* Line Number Graphics */
+.lineno-graphic {
+    -fx-background-color: transparent;
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 12px;
+    -fx-padding: 2px 8px;
+}

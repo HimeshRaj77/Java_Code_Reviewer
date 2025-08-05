@@ -1,0 +1,14 @@
+# Private configuration file template
+# Copy this file to application-private.properties and replace the placeholder values
+# IMPORTANT: Never commit your actual application-private.properties file!
+
+# OpenRouter AI Configuration
+openrouter.api.key=your-openrouter-api-key-here
+openrouter.model.name=deepseek/deepseek-r1:free
+openrouter.endpoint.url=https://openrouter.ai/api/v1/chat/completions
+
+# Analysis Configuration
+app.analysis.timeout=120
+
+# Additional custom configurations can be added below
+# example.custom.setting=value

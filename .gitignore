@@ -1,0 +1,61 @@
+# Root level ignores
+*.log
+*.tmp
+.DS_Store
+.vscode/
+.idea/
+
+# Backend (Maven + Spring Boot)
+backend/target/
+backend/*.jar
+backend/*.war
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/logs/
+
+# Frontend (Maven + JavaFX)
+frontend/target/
+frontend/*.jar
+frontend/.mvn/
+frontend/mvnw
+frontend/mvnw.cmd
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Configuration files with secrets
+backend/src/main/resources/application-secrets.properties
+frontend/src/main/resources/config/application-private.properties
+*.key
+*.pem
+
+# Build and dependency directories
+node_modules/
+dist/
+build/
+
+# Docker
+.dockerignore

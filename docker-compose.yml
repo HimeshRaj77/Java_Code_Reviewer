@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  codereviewer-backend:
+    build: ./backend
+    container_name: codereviewer-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-YOUR_API_KEY_HERE}
+      - OPENROUTER_MODEL_NAME=${OPENROUTER_MODEL_NAME:-mistralai/mixtral-8x7b-instruct}
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/code-review/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - codereviewer-network
+
+networks:
+  codereviewer-network:
+    driver: bridge

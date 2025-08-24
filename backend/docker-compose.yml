@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  codereviewer-backend:
+    build: .
+    container_name: codereviewer-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Spring Boot profile (optional)
+      - SPRING_PROFILES_ACTIVE=production
+      
+      # OpenRouter API configuration (replace with your actual values)
+      - OPENROUTER_API_KEY=YOUR_API_KEY_HERE
+      - OPENROUTER_MODEL_NAME=mistralai/mixtral-8x7b-instruct
+      
+      # JVM options for container
+      - JAVA_OPTS=-Xmx512m -Xms256m
+      
+      # Logging level
+      - LOGGING_LEVEL_COM_PROJECT_CODEREVIEWER=INFO
+    
+    # Health check configuration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/analysis/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Resource limits (optional)
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+# Optional: If you want to persist analysis history
+volumes:
+  analysis_data:
+    driver: local

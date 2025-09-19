@@ -69,7 +69,7 @@ public class ApiClientService {
                 
                 // Build HTTP request
                 HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(serverBaseUrl + "/api/analyze"))
+                    .uri(URI.create(serverBaseUrl + "/api/code-review/analyze"))
                     .timeout(REQUEST_TIMEOUT)
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
@@ -113,7 +113,7 @@ public class ApiClientService {
                 
                 // Build HTTP request
                 HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(serverBaseUrl + "/api/ai/suggest"))
+                    .uri(URI.create(serverBaseUrl + "/api/code-review/ai-suggest"))
                     .timeout(STREAMING_TIMEOUT)
                     .header("Content-Type", "application/json")
                     .header("Accept", "text/plain")
@@ -180,7 +180,7 @@ public class ApiClientService {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(serverBaseUrl + "/api/health"))
+                    .uri(URI.create(serverBaseUrl + "/api/code-review/health"))
                     .timeout(Duration.ofSeconds(5))
                     .GET()
                     .build();

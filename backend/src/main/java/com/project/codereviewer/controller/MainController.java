@@ -30,20 +30,11 @@ public class MainController {
     
     private String currentFileName = "";
 
-    /**
-     * Health check endpoint
-     * @return Simple status message
-     */
     @GetMapping("/health")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Code Reviewer Backend is running!");
     }
 
-    /**
-     * Analyzes the provided code and returns results.
-     * @param request The code analysis request containing the code to analyze
-     * @return CodeAnalysisResult with analysis findings
-     */
     @PostMapping("/analyze")
     public ResponseEntity<CodeAnalysisResult> analyzeCode(@RequestBody CodeAnalysisRequest request) {
         if (request.getCode() == null || request.getCode().trim().isEmpty()) {
@@ -53,10 +44,8 @@ public class MainController {
         try {
             CodeAnalysisResult result = analysisService.analyze(request.getCode());
             
-            // Add quick fixes to applicable issues
             addQuickFixes(result);
             
-            // Store analysis record for trend tracking
             if (request.getFileName() != null && !request.getFileName().isEmpty()) {
                 currentFileName = request.getFileName();
                 storeAnalysisRecord(result);
@@ -69,11 +58,6 @@ public class MainController {
         }
     }
 
-    /**
-     * Uploads and analyzes a Java file
-     * @param file The Java file to analyze
-     * @return CodeAnalysisResult with analysis findings
-     */
     @PostMapping("/upload")
     public ResponseEntity<CodeAnalysisResult> uploadAndAnalyze(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
@@ -156,7 +140,6 @@ public class MainController {
             record.setTotalErrors(result.getErrors().size());
             record.setTotalSuggestions(result.getSuggestions().size());
             
-            // Extract complexity metrics from suggestions
             for (CodeIssue issue : result.getSuggestions()) {
                 if (issue.getMessage().contains("Cyclomatic complexity:")) {
                     String methodName = issue.getMessage().split(":")[0];
@@ -165,12 +148,10 @@ public class MainController {
                         int complexity = Integer.parseInt(complexityStr);
                         record.addComplexityMetric(methodName, complexity);
                     } catch (NumberFormatException e) {
-                        // Ignore parsing errors
                     }
                 }
             }
             
-            // Append to analysis history file
             String homeDir = System.getProperty("user.home");
             String historyFile = homeDir + "/analysis_history.json";
             
@@ -178,12 +159,10 @@ public class MainController {
                 writer.write(record.toString() + "\n");
             }
         } catch (IOException e) {
-            // Silently fail - trend tracking is not critical
             System.err.println("Failed to store analysis record: " + e.getMessage());
         }
     }
 
-    // Request/Response DTOs
     public static class CodeAnalysisRequest {
         private String code;
         private String fileName;

@@ -10,10 +10,6 @@ services:
       # Spring Boot profile (optional)
       - SPRING_PROFILES_ACTIVE=production
       
-      # OpenRouter API configuration (replace with your actual values)
-      - OPENROUTER_API_KEY=YOUR_API_KEY_HERE
-      - OPENROUTER_MODEL_NAME=mistralai/mixtral-8x7b-instruct
-      
       # JVM options for container
       - JAVA_OPTS=-Xmx512m -Xms256m
       

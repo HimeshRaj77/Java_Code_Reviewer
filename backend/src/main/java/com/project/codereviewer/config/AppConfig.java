@@ -9,10 +9,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Centralized configuration class for handling application settings and secrets.
- * It loads API keys from a 'secrets.properties' file which should be excluded from version control.
- */
 public final class AppConfig {
     private static final Logger LOGGER = Logger.getLogger(AppConfig.class.getName());
     
@@ -22,16 +18,10 @@ public final class AppConfig {
     
     private static volatile Properties config;
 
-    // Private constructor to prevent instantiation of this utility class.
     private AppConfig() {
         throw new AssertionError("AppConfig is a utility class and should not be instantiated.");
     }
 
-    /**
-     * Get the OpenRouter API key from the secrets.properties file.
-     * * @return The API key as a String.
-     * @throws IOException If the API key cannot be retrieved.
-     */
     public static String getOpenRouterApiKey() throws IOException {
         Properties props = getConfig();
         String apiKey = props.getProperty(OPENROUTER_API_KEY_PROP);
@@ -41,11 +31,6 @@ public final class AppConfig {
         return apiKey;
     }
 
-    /**
-     * Get the OpenRouter model name from the application.properties file, or use a default.
-     * * @param defaultModel The default model to use if one is not specified in the properties file.
-     * @return The model name as a String.
-     */
     public static String getOpenRouterModelName(String defaultModel) {
         try {
             Properties props = getConfig();
@@ -64,12 +49,6 @@ public final class AppConfig {
         }
     }
 
-    /**
-     * Loads secrets from the properties file using a synchronized, double-checked locking pattern.
-     * It searches for the 'secrets.properties' file in the classpath, current directory, and user's home directory.
-     * * @return A Properties object containing the secrets.
-     * @throws IOException If the secrets file cannot be found or loaded.
-     */
     private static Properties getConfig() throws IOException {
         if (config == null) {
             synchronized (AppConfig.class) {

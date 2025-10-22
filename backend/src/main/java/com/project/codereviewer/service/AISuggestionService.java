@@ -15,10 +15,6 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 
-/**
- * Service for interacting with AI APIs to get code suggestions.
- * Uses OpenRouter to access various open-source models like Mistral or LLaMA 3.
- */
 @Service
 public class AISuggestionService {
     private static final String API_URL = "http://localhost:11434/api/generate";
@@ -83,13 +79,6 @@ public class AISuggestionService {
         logger.info("AISuggestionService initialized with timeout: " + TIMEOUT.getSeconds() + " seconds");
     }
     
-    /**
-     * Get AI suggestions for code review in a blocking manner.
-     * 
-     * @param codeToReview The code to be reviewed
-     * @return The AI suggestion as a String
-     * @throws IOException If an error occurs during API communication
-     */
     public String getCodeSuggestion(String codeToReview) throws IOException {
         logger.info("Requesting code suggestion for review (Ollama Mistral)");
         String model = DEFAULT_MODEL;
@@ -127,13 +116,6 @@ public class AISuggestionService {
         }
     }
     
-    /**
-     * Get AI suggestions for code review with streaming response.
-     * 
-     * @param codeToReview The code to be reviewed
-     * @param responseConsumer Consumer that processes each chunk of the streaming response
-     * @return CompletableFuture that completes when the entire stream is processed
-     */
     public CompletableFuture<Void> getCodeSuggestionStreaming(String codeToReview, Consumer<String> responseConsumer) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         responseConsumer.accept("Starting AI review request (Ollama Mistral)...\n\n");

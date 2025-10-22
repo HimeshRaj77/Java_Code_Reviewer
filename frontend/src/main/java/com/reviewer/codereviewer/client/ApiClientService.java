@@ -4,7 +4,6 @@ import com.reviewer.codereviewer.client.dto.CodeAnalysisResult;
 import com.reviewer.codereviewer.client.dto.CodeIssue;
 import com.reviewer.codereviewer.client.dto.QuickFix;
 
-import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -116,28 +115,27 @@ public class ApiClientService {
                     .uri(URI.create(serverBaseUrl + "/api/code-review/ai-suggest"))
                     .timeout(STREAMING_TIMEOUT)
                     .header("Content-Type", "application/json")
-                    .header("Accept", "text/plain")
+                    .header("Accept", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
                 
-                // Send request and handle streaming response
-                HttpResponse<InputStream> response = httpClient.send(request, 
-                    HttpResponse.BodyHandlers.ofInputStream());
+                // Send request and handle JSON response
+                HttpResponse<String> response = httpClient.send(request, 
+                    HttpResponse.BodyHandlers.ofString());
                 
                 if (response.statusCode() == 200) {
-                    logger.info("AI suggestion request successful, processing stream");
-                    
-                    try (BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(response.body()))) {
-                        
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            chunkConsumer.accept(line + "\n");
-                        }
-                    }
+                    logger.info("AI suggestion request successful, processing response");
+                    // Parse JSON response to extract suggestion
+                    JsonNode jsonResponse = objectMapper.readTree(response.body());
+                    String suggestion = jsonResponse.get("suggestion").asText();
+                    logger.info("Received suggestion from backend, length: " + suggestion.length() + " chars");
+                    logger.info("Suggestion content: >>>\n" + suggestion + "\n<<< END suggestion");
+                    // Send the complete suggestion to the consumer
+                    chunkConsumer.accept(suggestion);
                 } else {
                     logger.warning("AI suggestion request failed with status: " + response.statusCode());
-                    throw new RuntimeException("Server error: " + response.statusCode());
+                    String errorBody = response.body();
+                    throw new RuntimeException("Server error: " + response.statusCode() + " - " + errorBody);
                 }
                 
             } catch (Exception e) {

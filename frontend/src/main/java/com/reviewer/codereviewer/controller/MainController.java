@@ -198,43 +198,71 @@ public class MainController {
             return;
         }
         
-        mainView.showAiLoading();
-        mainView.clearAiSuggestion();
-        
+        // Use the correct view for AI review actions
+        if (modernView != null) {
+            modernView.showAiLoading();
+            modernView.clearAiSuggestion();
+            Platform.runLater(() -> modernView.appendAiSuggestion("Processing your question: \"" + question + "\"\n\n"));
+        } else if (mainView != null) {
+            mainView.showAiLoading();
+            mainView.clearAiSuggestion();
+            Platform.runLater(() -> mainView.appendAiSuggestion("Processing your question: \"" + question + "\"\n\n"));
+        }
+
         logger.info("Starting AI request with question: \"" + question + "\"");
-        
-        // Show some immediate feedback
-        Platform.runLater(() -> mainView.appendAiSuggestion("Processing your question: \"" + question + "\"\n\n"));
-        
         logger.info("Using AI service from backend server");
-        
+
         // Use the API client for AI suggestions with streaming
         CompletableFuture<Void> future = apiClientService.getCodeSuggestionStreaming(
                 code, 
                 question,
-                // This consumer will be called for each chunk of the response
-                chunk -> Platform.runLater(() -> mainView.appendAiSuggestion(chunk))
+                chunk -> {
+                    logger.info("Received chunk from API client, length: " + chunk.length() + " chars");
+                    System.out.println("[DEBUG] Before Platform.runLater. modernView is null: " + (modernView == null) + ", mainView is null: " + (mainView == null));
+                    Platform.runLater(() -> {
+                        System.out.println("[DEBUG] Inside Platform.runLater lambda. modernView is null: " + (modernView == null) + ", mainView is null: " + (mainView == null));
+                        if (modernView != null) {
+                            System.out.println("[DEBUG] Using modernView.appendAiSuggestion");
+                            modernView.appendAiSuggestion(chunk);
+                        } else if (mainView != null) {
+                            System.out.println("[DEBUG] Calling mainView.appendAiSuggestion. Chunk length: " + chunk.length() + ", preview: " + chunk.substring(0, Math.min(100, chunk.length())));
+                            logger.info("Appending to mainView: " + chunk.substring(0, Math.min(100, chunk.length())) + "...");
+                            mainView.appendAiSuggestion(chunk);
+                        } else {
+                            System.out.println("[DEBUG] ERROR: Both modernView and mainView are null!");
+                        }
+                    });
+                }
         );
-        
+
         // Handle completion
         future.exceptionally(ex -> {
             Platform.runLater(() -> {
-                logger.log(Level.SEVERE, "AI suggestion error", ex);
-                mainView.appendAiSuggestion("\n\nError getting AI suggestion: " + ex.getMessage());
-                mainView.appendAiSuggestion("\n\nTroubleshooting steps:\n" +
+                String errorMsg = "\n\nError getting AI suggestion: " + ex.getMessage() +
+                        "\n\nTroubleshooting steps:\n" +
                         "1. Check that the backend server is running\n" +
                         "2. Verify your AI service configuration\n" +
                         "3. Check your internet connection\n" +
-                        "4. Try with a simpler question");
-                mainView.hideAiLoading();
+                        "4. Try with a simpler question";
+                if (modernView != null) {
+                    modernView.appendAiSuggestion(errorMsg);
+                    modernView.hideAiLoading();
+                } else if (mainView != null) {
+                    mainView.appendAiSuggestion(errorMsg);
+                    mainView.hideAiLoading();
+                }
             });
             return null;
         }).thenRun(() -> Platform.runLater(() -> {
-            mainView.hideAiLoading();
+            if (modernView != null) {
+                modernView.hideAiLoading();
+            } else if (mainView != null) {
+                mainView.hideAiLoading();
+            }
         }));
     }
 
     public CodeAnalysisResult getLastResult() {
         return lastResult;
     }
-} 
+}

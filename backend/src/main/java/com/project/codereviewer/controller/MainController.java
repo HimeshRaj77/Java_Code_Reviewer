@@ -105,18 +105,14 @@ public class MainController {
         if (request.getCode() == null || request.getCode().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        
         try {
             String question = request.getQuestion() != null ? request.getQuestion() : 
                             "Please review this code and suggest improvements.";
-            
             logger.info("Starting AI request with question: \"" + question + "\"");
-            
             String promptWithQuestion = buildPrompt(request.getCode(), question);
-            
             // Get synchronous response
             String suggestion = aiService.getCodeSuggestion(promptWithQuestion);
-            
+            logger.info("AI suggestion content: >>>\n" + suggestion + "\n<<< END AI suggestion content");
             return ResponseEntity.ok(new AISuggestionResponse(suggestion));
         } catch (Exception e) {
             logger.log(Level.SEVERE, "AI suggestion failed", e);

@@ -94,6 +94,11 @@ public class CodeIssue {
         return !quickFixes.isEmpty();
     }
     
+    // For JavaFX TableView compatibility
+    public int getLineNumber() {
+        return getLine();
+    }
+    
     @Override
     public String toString() {
         return String.format("%s at line %d: %s", type, line, message);

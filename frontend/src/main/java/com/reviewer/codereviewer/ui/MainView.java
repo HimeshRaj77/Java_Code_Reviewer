@@ -19,7 +19,6 @@ import javafx.stage.Stage;
 import javafx.scene.control.SplitPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.input.MouseEvent;
@@ -30,7 +29,6 @@ import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.scene.control.Tooltip;
@@ -41,7 +39,6 @@ import javafx.scene.layout.StackPane;
 import javafx.geometry.Insets;
 import javafx.scene.text.Text;
 import javafx.scene.shape.Rectangle;
-import java.util.concurrent.CompletableFuture;
 
 public class MainView {
     private final MainController controller;
@@ -88,6 +85,24 @@ public class MainView {
         BorderPane root = new BorderPane();
         root.setPrefSize(1400, 900);
         
+        // Initialize observable lists
+        errors = javafx.collections.FXCollections.observableArrayList();
+        suggestions = javafx.collections.FXCollections.observableArrayList();
+        filteredErrors = new FilteredList<>(errors, p -> true);
+        filteredSuggestions = new FilteredList<>(suggestions, p -> true);
+        
+        // Initialize error table view
+        errorTableView = new TableView<>(filteredErrors);
+        TableColumn<CodeIssue, Integer> errLineCol = new TableColumn<>("Line");
+        TableColumn<CodeIssue, String> errMessageCol = new TableColumn<>("Message");
+        errLineCol.setCellValueFactory(new PropertyValueFactory<>("lineNumber"));
+        errMessageCol.setCellValueFactory(new PropertyValueFactory<>("message"));
+        errorTableView.getColumns().add(errLineCol);
+        errorTableView.getColumns().add(errMessageCol);
+        errorTableView.setPrefHeight(250);
+        errorTableView.setMinHeight(200);
+        errorTableView.getStyleClass().add("table-view");
+        
         codeArea = new CodeArea();
         codeArea.setEditable(false);
         codeArea.setWrapText(false);
@@ -107,76 +122,46 @@ public class MainView {
         HBox.setHgrow(codeArea, javafx.scene.layout.Priority.ALWAYS);
         
         // Create HBox to hold code area and heatmap with proper spacing
-        HBox codeAndHeatmap = new HBox();
-        codeAndHeatmap.getChildren().addAll(codeArea, heatmapPane);
-        codeAndHeatmap.setSpacing(5);
-        codeAndHeatmap.getStyleClass().add("code-heatmap-container");
-        HBox.setHgrow(codeAndHeatmap, javafx.scene.layout.Priority.ALWAYS);
+        HBox codeWithHeatmap = new HBox(5);
+        codeWithHeatmap.getChildren().addAll(codeArea, heatmapPane);
+        HBox.setHgrow(codeArea, javafx.scene.layout.Priority.ALWAYS);
         
-        // Initialize AI suggestion area
+        // Create AI suggestion area
         aiSuggestionArea = new TextArea();
         aiSuggestionArea.setEditable(false);
         aiSuggestionArea.setWrapText(true);
         aiSuggestionArea.setPrefRowCount(10);
-        aiSuggestionArea.setVisible(false);
+        aiSuggestionArea.setPromptText("AI code review suggestions will appear here...");
         aiSuggestionArea.getStyleClass().add("ai-suggestion-area");
+        aiSuggestionArea.setVisible(false);  // Hidden by default
         
-        // Progress indicator for AI review
-        aiProgressIndicator = new ProgressIndicator();
-        aiProgressIndicator.setMaxSize(20, 20);
-        aiProgressIndicator.setVisible(false);
-
+        // Create a split pane for code area and AI suggestions
+        codeSplitPane = new SplitPane();
+        codeSplitPane.setOrientation(javafx.geometry.Orientation.VERTICAL);
+        codeSplitPane.getItems().addAll(codeWithHeatmap, aiSuggestionArea);
+        codeSplitPane.setDividerPositions(1.0);  // AI area hidden initially
+        SplitPane.setResizableWithParent(aiSuggestionArea, false);
+        VBox.setVgrow(codeSplitPane, javafx.scene.layout.Priority.ALWAYS);
+        
         // Create button for AI review
         Button reviewButton = new Button("🤖 AI Code Review");
         reviewButton.getStyleClass().add("ai-button");
         reviewButton.setOnAction(e -> requestAiReview());
-        
+
+        aiProgressIndicator = new ProgressIndicator();
+        aiProgressIndicator.setMaxSize(20, 20);
+        aiProgressIndicator.setVisible(false);
+
         HBox aiButtonBox = new HBox(5, reviewButton, aiProgressIndicator);
         aiButtonBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
         aiButtonBox.setPadding(new Insets(5));
-        
-        // Create vertical split for code and AI area with proper resize behavior
-        codeSplitPane = new SplitPane();
-        codeSplitPane.setOrientation(javafx.geometry.Orientation.VERTICAL);
-        VBox.setVgrow(codeSplitPane, javafx.scene.layout.Priority.ALWAYS);
-        
-        // Add a VBox to properly manage the code area and AI suggestion area
-        VBox codeContainer = new VBox();
-        codeContainer.getChildren().addAll(aiButtonBox, codeAndHeatmap);
-        VBox.setVgrow(codeAndHeatmap, javafx.scene.layout.Priority.ALWAYS);
-        
-        // Setup AI suggestion area with proper resize behavior
-        VBox aiContainer = new VBox();
-        aiContainer.getChildren().add(aiSuggestionArea);
-        VBox.setVgrow(aiSuggestionArea, javafx.scene.layout.Priority.ALWAYS);
-        
-        codeSplitPane.getItems().addAll(codeContainer, aiContainer);
-        codeSplitPane.setDividerPositions(0.7);
-        codeSplitPane.getStyleClass().add("code-split-pane");
 
-        // Initialize collections and filtered lists
-        errors = FXCollections.observableArrayList();
-        suggestions = FXCollections.observableArrayList();
-        filteredErrors = new FilteredList<>(errors, p -> true);
-        filteredSuggestions = new FilteredList<>(suggestions, p -> true);
-        
-        // Create and configure error TableView
-        errorTableView = new TableView<>(filteredErrors);
-        TableColumn<CodeIssue, Integer> errorLineCol = new TableColumn<>("Line");
-        TableColumn<CodeIssue, String> errorSeverityCol = new TableColumn<>("Severity");
-        TableColumn<CodeIssue, String> errorMessageCol = new TableColumn<>("Message");
-        
-        errorLineCol.setCellValueFactory(new PropertyValueFactory<>("lineNumber"));
-        errorSeverityCol.setCellValueFactory(new PropertyValueFactory<>("severity"));
-        errorMessageCol.setCellValueFactory(new PropertyValueFactory<>("message"));
-        
-        errorTableView.getColumns().add(errorLineCol);
-        errorTableView.getColumns().add(errorSeverityCol);
-        errorTableView.getColumns().add(errorMessageCol);
-        errorTableView.setPrefHeight(200);
-        errorTableView.setMinHeight(150);
-        errorTableView.getStyleClass().add("table-view");
-        
+        // Add the AI button to the code area header
+        HBox codeHeader = new HBox();
+        codeHeader.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        codeHeader.getChildren().add(aiButtonBox);
+        codeHeader.setPadding(new Insets(5, 10, 5, 10));
+        codeHeader.setSpacing(10);
         // Create and configure suggestion TableView
         suggestionTableView = new TableView<>(filteredSuggestions);
         TableColumn<CodeIssue, Integer> suggLineCol = new TableColumn<>("Line");
@@ -237,30 +222,36 @@ public class MainView {
         detailsArea.getStyleClass().add("details-area");
 
         // Improved right pane layout with better spacing
-        VBox rightPane = new VBox();
-        rightPane.setSpacing(15);
-        rightPane.setPadding(new Insets(15));
-        rightPane.getChildren().addAll(
+        VBox analysisPane = new VBox();
+        analysisPane.setSpacing(15);
+        analysisPane.setPadding(new Insets(15));
+        analysisPane.getChildren().addAll(
             errorHeader, filterBox, errorTableView, 
-            suggestionHeader, suggestionTableView, 
-            detailsHeader, detailsArea
+            suggestionHeader, suggestionTableView
         );
-        rightPane.getStyleClass().add("right-pane");
-        rightPane.setMaxWidth(400);
-        rightPane.setPrefWidth(350);
-        rightPane.setMinWidth(300);
+        analysisPane.getStyleClass().add("analysis-pane");
+        analysisPane.setMaxWidth(400);
+        analysisPane.setPrefWidth(350);
+        analysisPane.setMinWidth(300);
 
-        // Main split pane with better proportions
+        VBox detailsPane = new VBox();
+        detailsPane.setSpacing(10);
+        detailsPane.setPadding(new Insets(15));
+        detailsPane.getChildren().addAll(detailsHeader, detailsArea);
+        detailsPane.getStyleClass().add("details-pane");
+        detailsPane.setMaxWidth(400);
+        detailsPane.setPrefWidth(350);
+        detailsPane.setMinWidth(300);
+
+        // Main split pane: left = analysis, right = details
         SplitPane mainSplitPane = new SplitPane();
-        mainSplitPane.getItems().addAll(codeSplitPane, rightPane);
-        mainSplitPane.setDividerPositions(0.7);
+        mainSplitPane.getItems().addAll(analysisPane, detailsPane);
+        mainSplitPane.setDividerPositions(0.6);
         mainSplitPane.getStyleClass().add("main-split-pane");
-        
-        // Set proper growth behavior for the code area side of the split pane
-        codeSplitPane.setMinWidth(500);
-        codeSplitPane.setPrefWidth(1000);
-        SplitPane.setResizableWithParent(codeSplitPane, true);
-        SplitPane.setResizableWithParent(rightPane, false);
+
+        // Set proper growth behavior for both sides
+        SplitPane.setResizableWithParent(analysisPane, true);
+        SplitPane.setResizableWithParent(detailsPane, true);
 
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("File");
@@ -314,22 +305,25 @@ public class MainView {
         menuBar.getMenus().addAll(fileMenu, editMenu, aiMenu);
         menuBar.getStyleClass().add("menu-bar");
 
-        // Add the AI button to the code area header
-        HBox codeHeader = new HBox();
-        codeHeader.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
-        codeHeader.getChildren().add(aiButtonBox);
-        codeHeader.setPadding(new Insets(5, 10, 5, 10));
-        codeHeader.setSpacing(10);
-        
-        VBox codeContainerWithHeader = new VBox(codeHeader, mainSplitPane);
-        VBox.setVgrow(mainSplitPane, javafx.scene.layout.Priority.ALWAYS);
-        
         // Create and setup status bar
         statusBar = new Label("Ready");
         statusBar.getStyleClass().add("status-bar");
+
+        // Create outer split pane: left = code with AI suggestions, right = analysis + details
+        SplitPane outerSplitPane = new SplitPane();
+        outerSplitPane.setOrientation(javafx.geometry.Orientation.HORIZONTAL);
+        
+        // Left side container with code and header
+        VBox leftContainer = new VBox();
+        leftContainer.getChildren().addAll(codeHeader, codeSplitPane);
+        VBox.setVgrow(codeSplitPane, javafx.scene.layout.Priority.ALWAYS);
+        
+        // Right side with analysis and details
+        outerSplitPane.getItems().addAll(leftContainer, mainSplitPane);
+        outerSplitPane.setDividerPositions(0.5);
         
         root.setTop(menuBar);
-        root.setCenter(codeContainerWithHeader);
+        root.setCenter(outerSplitPane);
         root.setBottom(statusBar);
 
         Scene scene = new Scene(root);
@@ -692,8 +686,13 @@ public class MainView {
      * Append to the AI suggestion text (for streaming responses)
      */
     public void appendAiSuggestion(String text) {
+        System.out.println("[DEBUG] appendAiSuggestion called. Text length: " + text.length() + ", preview: " + text.substring(0, Math.min(100, text.length())));
+        logger.info("appendAiSuggestion called with text length: " + text.length() + " chars");
+        logger.info("aiSuggestionArea is null: " + (aiSuggestionArea == null));
+        logger.info("aiSuggestionArea is visible: " + (aiSuggestionArea != null && aiSuggestionArea.isVisible()));
         aiSuggestionArea.appendText(text);
         if (!aiSuggestionArea.isVisible()) {
+            logger.info("Making aiSuggestionArea visible");
             aiSuggestionArea.setVisible(true);
             codeSplitPane.setDividerPositions(0.7);
         }

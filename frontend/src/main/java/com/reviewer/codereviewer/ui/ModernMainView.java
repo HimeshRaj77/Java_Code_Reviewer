@@ -1008,4 +1008,39 @@ public class ModernMainView {
         );
         statusLabel.setText(summaryText);
     }
+    
+    // --- AI Review UI methods for MainController ---
+    public void showAiLoading() {
+        Platform.runLater(() -> {
+            if (aiProgressIndicator != null) {
+                aiProgressIndicator.setVisible(true);
+            }
+            statusLabel.setText("AI review in progress...");
+        });
+    }
+
+    public void hideAiLoading() {
+        Platform.runLater(() -> {
+            if (aiProgressIndicator != null) {
+                aiProgressIndicator.setVisible(false);
+            }
+            statusLabel.setText("AI review complete.");
+        });
+    }
+
+    public void clearAiSuggestion() {
+        Platform.runLater(() -> {
+            if (aiSuggestionArea != null) {
+                aiSuggestionArea.setText("");
+            }
+        });
+    }
+
+    public void appendAiSuggestion(String text) {
+        Platform.runLater(() -> {
+            if (aiSuggestionArea != null) {
+                aiSuggestionArea.appendText(text);
+            }
+        });
+    }
 }

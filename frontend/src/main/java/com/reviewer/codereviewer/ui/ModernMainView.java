@@ -50,8 +50,6 @@ public class ModernMainView {
     private TableView<CodeIssue> suggestionsTable;
     private Label statusLabel;
     private ProgressBar analysisProgressBar;
-    private Button analyzeButton;
-    private Button aiReviewButton;
     private VBox issueDetailsPane;
     private ScrollPane detailsScrollPane;
     private Label filePathLabel;
@@ -80,8 +78,8 @@ public class ModernMainView {
     public Scene createScene() {
         BorderPane root = createMainLayout();
         Scene scene = new Scene(root, 1400, 900);
+        scene.setFill(javafx.scene.paint.Color.web("#F0F4F8"));
         
-        // Apply modern theme
         scene.getStylesheets().clear();
         scene.getStylesheets().add(getClass().getResource("/modern-theme.css").toExternalForm());
         
@@ -91,8 +89,9 @@ public class ModernMainView {
     private BorderPane createMainLayout() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("main-container");
+        root.setMaxWidth(1440);
+        root.setStyle("-fx-background-color: #FFFFFF; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 30, 0, 0, 10); -fx-background-radius: 12; -fx-border-radius: 12;");
         
-        // Create header with file info and controls
         VBox header = createHeader();
         root.setTop(header);
         
@@ -168,31 +167,18 @@ public class ModernMainView {
         toolbar.getStyleClass().add("toolbar");
         toolbar.setAlignment(Pos.CENTER_LEFT);
         
-        // File path display
         filePathLabel = new Label("No file selected");
         filePathLabel.getStyleClass().add("file-path-label");
         
-        // Spacer
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
-        // Analysis controls
-        analyzeButton = new Button("📊 Analyze Code");
-        analyzeButton.getStyleClass().addAll("button", "primary-button");
-        analyzeButton.setOnAction(e -> analyzeCode());
-        
-        aiReviewButton = new Button("🤖 AI Review");
-        aiReviewButton.getStyleClass().addAll("button", "ai-button");
-        aiReviewButton.setOnAction(e -> requestAiReview());
-        
-        // Progress indicator
         analysisProgressBar = new ProgressBar();
         analysisProgressBar.setVisible(false);
         analysisProgressBar.setPrefWidth(200);
         
         toolbar.getChildren().addAll(
-            filePathLabel, spacer, 
-            analyzeButton, aiReviewButton, analysisProgressBar
+            filePathLabel, spacer, analysisProgressBar
         );
         
         return toolbar;
@@ -222,14 +208,12 @@ public class ModernMainView {
         VBox codeSection = new VBox(12);
         codeSection.getStyleClass().add("card");
         
-        // Code editor header
         HBox codeHeader = new HBox(12);
         codeHeader.setAlignment(Pos.CENTER_LEFT);
         
         Label codeTitle = new Label("📝 Code Editor");
         codeTitle.getStyleClass().addAll("card-header", "section-header");
         
-        // Search in code
         TextField codeSearchField = new TextField();
         codeSearchField.setPromptText("Search in code...");
         codeSearchField.getStyleClass().add("search-field");
@@ -240,12 +224,51 @@ public class ModernMainView {
         
         codeHeader.getChildren().addAll(codeTitle, codeSpacerJavaFX, codeSearchField);
         
-        // Code area with heatmap
+        HBox actionsToolbar = createActionsToolbar();
+        
         HBox codeContainer = createCodeAreaWithHeatmap();
         VBox.setVgrow(codeContainer, Priority.ALWAYS);
         
-        codeSection.getChildren().addAll(codeHeader, codeContainer);
+        codeSection.getChildren().addAll(codeHeader, actionsToolbar, codeContainer);
         return codeSection;
+    }
+    
+    private HBox createActionsToolbar() {
+        HBox actionsToolbar = new HBox(12);
+        actionsToolbar.setAlignment(Pos.CENTER_LEFT);
+        actionsToolbar.setPadding(new Insets(8, 0, 8, 0));
+        
+        Button analyzeBtn = new Button("📊 Analyze Code");
+        analyzeBtn.getStyleClass().addAll("button", "primary-button");
+        analyzeBtn.setStyle("-fx-background-color: #88BDF2; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20;");
+        analyzeBtn.setOnAction(e -> {
+            analyzeCode();
+            showAnalysisPanel(false);
+        });
+        
+        Button aiReviewBtn = new Button("🤖 AI Review");
+        aiReviewBtn.getStyleClass().addAll("button", "secondary-button");
+        aiReviewBtn.setStyle("-fx-background-color: transparent; -fx-border-color: #88BDF2; -fx-border-width: 2; -fx-text-fill: #384959; -fx-font-weight: bold; -fx-padding: 10 20;");
+        aiReviewBtn.setOnAction(e -> {
+            requestAiReview();
+            showAnalysisPanel(true);
+        });
+        
+        actionsToolbar.getChildren().addAll(analyzeBtn, aiReviewBtn);
+        return actionsToolbar;
+    }
+    
+    private void showAnalysisPanel(boolean showAiTab) {
+        VBox analysisSection = (VBox) mainSplit.getItems().get(1);
+        analysisSection.getStyleClass().remove("hidden");
+        analysisSection.setVisible(true);
+        analysisSection.setManaged(true);
+        
+        if (showAiTab) {
+            analysisTabPane.getSelectionModel().select(3);
+        } else {
+            analysisTabPane.getSelectionModel().select(0);
+        }
     }
     
     private HBox createCodeAreaWithHeatmap() {
@@ -279,6 +302,7 @@ public class ModernMainView {
     private VBox createAnalysisSection() {
         VBox analysisSection = new VBox(16);
         analysisSection.getStyleClass().add("card");
+        analysisSection.getStyleClass().add("hidden");
         analysisSection.setPrefWidth(450);
         analysisSection.setMinWidth(400);
         
@@ -454,17 +478,14 @@ public class ModernMainView {
         issueDetailsPane = new VBox(12);
         issueDetailsPane.getStyleClass().add("issue-details-panel");
         issueDetailsPane.setPadding(new Insets(16));
-        issueDetailsPane.setVisible(false); // Hidden by default
+        issueDetailsPane.setPrefWidth(350);
+        issueDetailsPane.setMinWidth(300);
         
-        Label detailsTitle = new Label("� Issue Details");
+        Label detailsTitle = new Label("🔍 Issue Details");
         detailsTitle.getStyleClass().addAll("section-header", "details-header");
         
-        // Create expandable details content
-        VBox detailsContent = new VBox(8);
-        detailsContent.getStyleClass().add("details-content");
-        
-        // Wrap in scroll pane for large content
-        detailsScrollPane = new ScrollPane(detailsContent);
+        // Create scroll pane for details content (will be populated in showIssueDetails)
+        detailsScrollPane = new ScrollPane();
         detailsScrollPane.setFitToWidth(true);
         detailsScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         detailsScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -472,7 +493,7 @@ public class ModernMainView {
         VBox.setVgrow(detailsScrollPane, Priority.ALWAYS);
         
         // Close button
-        Button closeButton = new Button("✕");
+        Button closeButton = new Button("✕ Close");
         closeButton.getStyleClass().addAll("button", "close-button");
         closeButton.setOnAction(e -> hideIssueDetails());
         
@@ -506,7 +527,9 @@ public class ModernMainView {
         Label issueSeverity = new Label("Severity: " + (issue.getSeverity() != null ? issue.getSeverity() : "Unknown"));
         issueSeverity.getStyleClass().add("issue-severity");
         
-        Label issueLine = new Label("Line: " + issue.getLine());
+        // Display line number (show "Unknown" if line is 0 or negative)
+        String lineDisplay = issue.getLine() > 0 ? String.valueOf(issue.getLine()) : "Unknown";
+        Label issueLine = new Label("Line: " + lineDisplay);
         issueLine.getStyleClass().add("issue-line");
         
         header.getChildren().addAll(issueTitle, issueSeverity, issueLine);
@@ -515,11 +538,12 @@ public class ModernMainView {
         Label descTitle = new Label("Description:");
         descTitle.getStyleClass().add("detail-section-title");
         
-        TextArea descArea = new TextArea(issue.getMessage());
-        descArea.setEditable(false);
+        // Use Label instead of TextArea for better auto-sizing
+        Label descArea = new Label(issue.getMessage());
         descArea.setWrapText(true);
-        descArea.setPrefRowCount(3);
+        descArea.setMaxWidth(Double.MAX_VALUE);
         descArea.getStyleClass().add("issue-description");
+        descArea.setStyle("-fx-padding: 8; -fx-background-color: #F8F9FA; -fx-border-color: #E1E8ED; -fx-border-radius: 4; -fx-background-radius: 4;");
         
         // Quick fixes section
         VBox fixesSection = new VBox(8);
@@ -560,11 +584,33 @@ public class ModernMainView {
             }
         }
         
-        // Navigate to line in code editor
+        // Navigate to line in code editor (only if line number is valid)
         Platform.runLater(() -> {
-            codeArea.moveTo(issue.getLine() - 1, 0);
-            codeArea.selectLine();
-            codeArea.requestFocus();
+            try {
+                int lineNumber = issue.getLine();
+                
+                // Validate line number
+                if (lineNumber < 1 || lineNumber > codeArea.getParagraphs().size()) {
+                    logger.warning("Invalid line number: " + lineNumber + " (total lines: " + codeArea.getParagraphs().size() + ")");
+                    return;
+                }
+                
+                // Navigate to the line (line numbers are 1-based in the issue, 0-based in CodeArea)
+                int zeroBasedLine = lineNumber - 1;
+                int lineStart = codeArea.getAbsolutePosition(zeroBasedLine, 0);
+                int lineEnd = lineStart + codeArea.getParagraph(zeroBasedLine).length();
+                
+                // Move to start of line and select the entire line
+                codeArea.moveTo(lineStart);
+                codeArea.selectRange(lineStart, lineEnd);
+                
+                // Scroll to make the line visible
+                codeArea.showParagraphAtTop(Math.max(0, zeroBasedLine - 5));
+                codeArea.requestFocus();
+                
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to navigate to line: " + issue.getLine(), e);
+            }
         });
     }
     
@@ -608,40 +654,43 @@ public class ModernMainView {
      */
     private void highlightIssueLine(CodeIssue issue) {
         try {
-            int lineNumber = issue.getLine() - 1; // Convert to 0-based index
+            int lineNumber = issue.getLine() - 1;
             if (lineNumber >= 0 && lineNumber < codeArea.getParagraphs().size()) {
                 int startPos = codeArea.getAbsolutePosition(lineNumber, 0);
                 int endPos = codeArea.getAbsolutePosition(lineNumber, codeArea.getParagraph(lineNumber).length());
                 
                 String severity = issue.getSeverity();
-                String styleClass = getHighlightStyleClass(severity);
+                java.util.Collection<String> styleClasses = getHighlightStyleClasses(severity);
                 
-                // Apply the highlight style to the entire line
-                codeArea.setStyleClass(startPos, endPos, styleClass);
+                codeArea.setStyle(startPos, endPos, styleClasses);
             }
         } catch (Exception e) {
             logger.warning("Failed to highlight line " + issue.getLine() + ": " + e.getMessage());
         }
     }
     
-    /**
-     * Get CSS style class based on issue severity
-     * @param severity The severity level
-     * @return CSS style class name
-     */
-    private String getHighlightStyleClass(String severity) {
-        if (severity == null) return "issue-info";
+    private java.util.Collection<String> getHighlightStyleClasses(String severity) {
+        java.util.List<String> styles = new java.util.ArrayList<>();
+        
+        if (severity == null) {
+            styles.add("issue-info");
+            return styles;
+        }
         
         switch (severity.toLowerCase()) {
             case "critical":
-                return "issue-critical";
+                styles.add("issue-critical");
+                break;
             case "warning":
-                return "issue-warning";
+                styles.add("issue-warning");
+                break;
             case "info":
-                return "issue-info";
+                styles.add("issue-info");
+                break;
             default:
-                return "issue-info";
+                styles.add("issue-info");
         }
+        return styles;
     }
     
     /**
@@ -675,11 +724,12 @@ public class ModernMainView {
         try {
             java.util.regex.Pattern regex = java.util.regex.Pattern.compile(pattern, java.util.regex.Pattern.MULTILINE);
             java.util.regex.Matcher matcher = regex.matcher(text);
+            java.util.List<String> styles = java.util.Collections.singletonList(styleClass);
             
             while (matcher.find()) {
                 int start = matcher.start();
                 int end = matcher.end();
-                codeArea.setStyleClass(start, end, styleClass);
+                codeArea.setStyle(start, end, styles);
             }
         } catch (Exception e) {
             logger.warning("Failed to apply pattern highlighting: " + e.getMessage());

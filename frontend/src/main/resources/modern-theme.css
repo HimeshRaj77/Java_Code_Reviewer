@@ -1,18 +1,65 @@
 /* Professional Modern UI Theme for Code Reviewer */
 
 .root {
-    -fx-background-color: #fafbfc;
+    -fx-background-color: #F0F4F8;
     -fx-font-family: "SF Pro Display", "Inter", "Segoe UI", "Roboto", sans-serif;
-    -fx-text-fill: #1c2532;
+    -fx-text-fill: #384959;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
-    -fx-accent: #0066cc;
+    -fx-accent: #88BDF2;
 }
 
-/* Main Layout Containers */
 .main-container {
-    -fx-background-color: #fafbfc;
-    -fx-padding/* Status Bar */
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 0;
+}
+
+.hidden {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-min-width: 0;
+}
+
+.card {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 8;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2);
+}
+
+.section-header {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #384959;
+}
+
+.primary-button {
+    -fx-background-color: #88BDF2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #6AABEF;
+}
+
+.secondary-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #88BDF2;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-text-fill: #384959;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #BDDDFC;
+}/* Status Bar */
 .status-bar {
     -fx-background-color: #f8fafc;
     -fx-border-color: #e1e8ed;
@@ -108,67 +155,25 @@
     -fx-background-color: transparent;
 }
 
-/* Code Syntax Highlighting */
-.keyword {
-    -fx-fill: #0066cc;
+/* Code Issue Highlighting - RichTextFX Compatible */
+.issue-critical {
+    -rtfx-background-color: rgba(239, 68, 68, 0.25);
+    -fx-fill: #991b1b;
     -fx-font-weight: bold;
 }
 
-.string {
-    -fx-fill: #22863a;
-}
-
-.comment {
-    -fx-fill: #6a737d;
-    -fx-font-style: italic;
-}
-
-.number {
-    -fx-fill: #005cc5;
-}
-
-/* Code Issue Highlighting */
-.issue-critical {
-    -fx-underline: true;
-    -fx-background-color: rgba(220, 38, 38, 0.2);
-    -fx-border-color: #dc2626;
-    -fx-border-width: 0 0 2 0;
-}
-
 .issue-warning {
-    -fx-underline: true;
-    -fx-background-color: rgba(245, 158, 11, 0.2);
-    -fx-border-color: #f59e0b;
-    -fx-border-width: 0 0 2 0;
+    -rtfx-background-color: rgba(245, 158, 11, 0.25);
+    -fx-fill: #92400e;
+    -fx-font-weight: bold;
 }
 
 .issue-info {
-    -fx-underline: true;
-    -fx-background-color: rgba(59, 130, 246, 0.1);
-    -fx-border-color: #3b82f6;
-    -fx-border-width: 0 0 1 0;
+    -rtfx-background-color: rgba(59, 130, 246, 0.2);
+    -fx-fill: #1e40af;
 }
 
-/* Code Issue Highlighting */
-.issue-critical {
-    -fx-background-color: rgba(239, 68, 68, 0.15);
-    -fx-border-color: #ef4444;
-    -fx-border-width: 0 0 0 3;
-}
-
-.issue-warning {
-    -fx-background-color: rgba(245, 158, 11, 0.15);
-    -fx-border-color: #f59e0b;
-    -fx-border-width: 0 0 0 3;
-}
-
-.issue-info {
-    -fx-background-color: rgba(59, 130, 246, 0.15);
-    -fx-border-color: #3b82f6;
-    -fx-border-width: 0 0 0 3;
-}
-
-/* Syntax Highlighting */
+/* Syntax Highlighting - RichTextFX Compatible */
 .keyword {
     -fx-fill: #7c3aed;
     -fx-font-weight: bold;
@@ -602,5 +607,4 @@
 .ai-status-label {
     -fx-text-fill: #667eea;
     -fx-font-size: 13px;
-}
 }

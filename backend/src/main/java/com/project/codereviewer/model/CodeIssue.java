@@ -1,10 +1,13 @@
 package com.project.codereviewer.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CodeIssue {
     public enum Type { ERROR, SUGGESTION }
+    
+    @JsonProperty("line")  // Map to 'line' in JSON instead of 'lineNumber'
     private int lineNumber;
     private String message;
     private Type type;

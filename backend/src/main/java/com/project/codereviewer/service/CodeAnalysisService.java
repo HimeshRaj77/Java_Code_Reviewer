@@ -56,8 +56,10 @@ public class CodeAnalysisService {
                 CompilationUnit cu = parseResult.getResult().get();
                 for (MethodDeclaration method : cu.findAll(MethodDeclaration.class)) {
                     String methodName = method.getNameAsString();
-                    int startLine = method.getBegin().map(b -> b.line).orElse(-1);
-                    int length = method.getEnd().map(e -> e.line).orElse(-1) - startLine + 1;
+                    // Default to line 1 if position is not available
+                    int startLine = method.getBegin().map(b -> b.line).orElse(1);
+                    int endLine = method.getEnd().map(e -> e.line).orElse(startLine);
+                    int length = endLine - startLine + 1;
                     int maxNesting = getMaxNestingEnhanced(method.getBody());
                     logger.fine("[DEBUG] Method: " + methodName + ", startLine: " + startLine + ", length: " + length + ", maxNesting: " + maxNesting);
 
@@ -138,10 +140,10 @@ public class CodeAnalysisService {
                 MagicNumberVisitor magicNumberVisitor = new MagicNumberVisitor();
                 cu.accept(magicNumberVisitor, result);
             } else {
-                result.getErrors().add(new CodeIssue(0, "Error parsing code.", CodeIssue.Type.ERROR, "critical"));
+                result.getErrors().add(new CodeIssue(1, "Error parsing code.", CodeIssue.Type.ERROR, "critical"));
             }
         } catch (Exception e) {
-            result.getErrors().add(new CodeIssue(0, "Error analyzing code: " + e.getMessage(), CodeIssue.Type.ERROR, "critical"));
+            result.getErrors().add(new CodeIssue(1, "Error analyzing code: " + e.getMessage(), CodeIssue.Type.ERROR, "critical"));
         }
         // Debug output
         logger.fine("[DEBUG] Detected errors:");

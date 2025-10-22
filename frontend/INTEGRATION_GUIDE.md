@@ -40,9 +40,9 @@ public static void main(String[] args) {
 
 ### Phase 2: Security Integration
 
-#### 2.1 Update OpenRouterService with Security
+#### 2.1 Update AI Service with Security
 ```java
-// Add to OpenRouterService.java:
+// Add to AI service layer used by the backend connection (no external API keys):
 import com.reviewer.codereviewer.security.SecurityUtils;
 
 // In API methods, add validation:
@@ -102,7 +102,7 @@ try {
 ```java
 // Replace generic exceptions with specific ones:
 throw new AnalysisException("Failed to parse Java file", e);
-throw new ApiException("OpenRouter API request failed", e);
+throw new ApiException("AI service request failed", e);
 throw new ConfigurationException("Invalid API key configuration");
 ```
 
@@ -122,7 +122,6 @@ mvn test -Dtest=AISuggestionServiceTest
 
 ### Environment Variables (Recommended for Production)
 ```bash
-export CODEREVIEW_OPENROUTER_API_KEY="your-actual-api-key"
 export CODEREVIEW_CACHE_ENABLED="true"
 export CODEREVIEW_METRICS_ENABLED="true"
 export CODEREVIEW_LOGGING_LEVEL="INFO"

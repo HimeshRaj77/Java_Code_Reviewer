@@ -8,8 +8,6 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=production
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-YOUR_API_KEY_HERE}
-      - OPENROUTER_MODEL_NAME=${OPENROUTER_MODEL_NAME:-mistralai/mixtral-8x7b-instruct}
       - JAVA_OPTS=-Xmx512m -Xms256m
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/api/code-review/health"]

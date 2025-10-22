@@ -62,3 +62,7 @@ build/
 
 # Documentation (presentation materials)
 docs/FRONTEND_PRESENTATION_GUIDE.md
+
+# Markdown files (ignore all except README)
+**/*.md
+!**/README.md

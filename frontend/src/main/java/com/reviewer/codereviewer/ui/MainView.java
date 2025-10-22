@@ -686,7 +686,6 @@ public class MainView {
      * Append to the AI suggestion text (for streaming responses)
      */
     public void appendAiSuggestion(String text) {
-        System.out.println("[DEBUG] appendAiSuggestion called. Text length: " + text.length() + ", preview: " + text.substring(0, Math.min(100, text.length())));
         logger.info("appendAiSuggestion called with text length: " + text.length() + " chars");
         logger.info("aiSuggestionArea is null: " + (aiSuggestionArea == null));
         logger.info("aiSuggestionArea is visible: " + (aiSuggestionArea != null && aiSuggestionArea.isVisible()));

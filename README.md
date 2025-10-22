@@ -6,7 +6,7 @@ A comprehensive Java code review application that combines static analysis with 
 
 - **Backend**: Spring Boot REST API (Java 17)
 - **Frontend**: JavaFX Desktop Application (Java 21)
-- **AI Integration**: OpenRouter API with Mistral AI
+- **AI Integration**: Local Ollama (Mistral) via backend — no external API keys required
 
 ## 🚀 Quick Start
 
@@ -46,6 +46,22 @@ CodeReviewer/
 ├── scripts/          # Build and deployment scripts
 └── docker-compose.yml # Full-stack deployment
 ```
+
+## 🤝 Why split into frontend and backend?
+
+This project is split into two modules to keep responsibilities clear and the architecture maintainable:
+
+- **backend/** (Spring Boot)
+   - Exposes REST endpoints for analysis and AI suggestions
+   - Handles communication with the local AI runtime (Ollama)
+   - Centralizes security, logging, and future persistence
+
+- **frontend/** (JavaFX)
+   - Provides a rich desktop UI for code browsing and review
+   - Streams and renders suggestions progressively without blocking
+   - Stays lightweight by delegating heavy work to the backend
+
+This separation improves testability, allows independent builds and deployments, and makes it easy to swap the AI provider or UI without changing the other layer.
 
 ## 🔧 Features
 
